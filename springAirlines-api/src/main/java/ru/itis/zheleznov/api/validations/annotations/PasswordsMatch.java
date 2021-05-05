@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordsMatch {
-    String message() default "Passwords don't match";
+    String message() default "Пароли не совпадают";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
 }
