@@ -1,5 +1,6 @@
 <#ftl encoding="UTF-8"/>
 <#import "layouts/base.ftlh" as base>
+<#import "spring.ftl" as spring/>
 <@base.main title="Регистрация">
     <main>
         <section class="mt-5 mb-4">
@@ -16,27 +17,24 @@
                                     </div>
                                 </#if>
                                 <h4 class="error-message" id="error-message"></h4>
+                                <@spring.bind "signUpForm"/>
                                 <form action="/signUp" autocomplete="off" method="post" id="form">
                                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                                     <div class="form-group">
                                         <span class="text-black-50">Email</span>
-                                        <input id="email-signup" type="email" data-verify="email"
-                                               class="form-control" name="email"
-                                               required>
+                                        <@spring.formInput "signUpForm.email" "class='form-control' required"/>
+                                        <@spring.showErrors "<br>" "error"/>
                                     </div>
                                     <div class="form-group">
                                         <span class="text-black-50">Пароль</span>
-                                        <input id="password-signup" type="password" class="form-control"
-                                               name="password"
-                                               pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}"
-                                               title="Password should consist of latin alphabet and must contains letter with capital case and at list one num"
-                                               required>
+                                        <@spring.formPasswordInput "signUpForm.password" "class='form-control'                                          required "/>
+                                        <@spring.showErrors "<br>" "error"/>
+                                        <#if passwordsErrorMessage??><p class="error">${passwordsErrorMessage}</p></#if>
                                     </div>
                                     <div class="form-group">
                                         <span class="text-black-50">Повторите пароль</span>
-                                        <input id="password-rep-signup" type="password" class="form-control"
-                                               name="passwordAgain"
-                                               required>
+                                        <@spring.formPasswordInput "signUpForm.passwordAgain" "class='form-control'                                          required"/>
+                                        <#if passwordsErrorMessage??><p class="error">${passwordsErrorMessage}</p></#if>
                                     </div>
                                     <button class="btn btn-primary btn-lg btn-block waves-effect waves-light"
                                             id="submit">Войти
