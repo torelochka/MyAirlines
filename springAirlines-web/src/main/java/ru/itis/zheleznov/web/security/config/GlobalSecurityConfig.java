@@ -22,6 +22,8 @@ import ru.itis.zheleznov.web.security.filters.GoogleFilter;
 import ru.itis.zheleznov.web.security.filters.UserFilter;
 import ru.itis.zheleznov.web.security.jwt.AuthEntryPointJwt;
 import ru.itis.zheleznov.web.security.jwt.AuthTokenFilter;
+import ru.itis.zheleznov.web.security.jwt.TokenAuthenticationFilter;
+import ru.itis.zheleznov.web.security.jwt.TokenAuthenticationProvider;
 
 import javax.servlet.Filter;
 
@@ -81,7 +83,10 @@ public class GlobalSecurityConfig {
         UserDetailsServiceImpl userDetailsService;
 
         @Autowired
-        private AuthEntryPointJwt unauthorizedHandler;
+        private TokenAuthenticationFilter tokenAuthenticationFilter;
+
+        @Autowired
+        private TokenAuthenticationProvider tokenAuthenticationProvider;
 
         @Bean
         @Override
@@ -94,27 +99,21 @@ public class GlobalSecurityConfig {
             return new AuthTokenFilter();
         }
 
-        @Autowired
-        private PasswordEncoder passwordEncoder;
-
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.cors().and().csrf().disable()
+            http
                     .antMatcher("/api/**")
-                    .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                    .authorizeRequests()
-                        .antMatchers("/api/auth/**").permitAll()
-
-                    .anyRequest().authenticated();
-
-            http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                        .addFilterAt(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                        .csrf().disable()
+                        .sessionManagement().disable()
+                        .authorizeRequests()
+                            .antMatchers("/api/auth/**").permitAll()
+                            .anyRequest().authenticated().and();
         }
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+            auth.authenticationProvider(tokenAuthenticationProvider);
         }
-
     }
 }

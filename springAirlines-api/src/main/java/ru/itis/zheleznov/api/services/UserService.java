@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<UserDto> userByEmail(String email);
+    Optional<UserDto> userByEmailAndPassword(String email, String password);
 }

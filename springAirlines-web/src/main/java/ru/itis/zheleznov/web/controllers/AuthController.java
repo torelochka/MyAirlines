@@ -8,6 +8,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import ru.itis.zheleznov.api.dto.UserDto;
+import ru.itis.zheleznov.api.forms.SignUpForm;
+import ru.itis.zheleznov.api.services.SignUpService;
+import ru.itis.zheleznov.api.services.UserService;
 import ru.itis.zheleznov.impl.exceptions.TokenRefreshException;
 import ru.itis.zheleznov.impl.models.RefreshToken;
 import ru.itis.zheleznov.impl.models.User;
@@ -22,9 +26,11 @@ import ru.itis.zheleznov.web.security.details.RefreshTokenService;
 import ru.itis.zheleznov.web.security.details.UserDetailsImpl;
 import ru.itis.zheleznov.web.security.jwt.JwtUtils;
 
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,41 +53,43 @@ public class AuthController {
   @Autowired
   RefreshTokenService refreshTokenService;
 
+  @Autowired
+  private SignUpService signUpService;
+
+  @Autowired
+  private UserService userService;
+
   @PostMapping("/signIn")
+  @PermitAll
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-    Authentication authentication = authenticationManager
-            .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+    Optional<UserDto> userDto = userService.userByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+    if (userDto.isPresent()) {
+      RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDto.get().getId());
 
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+      return ResponseEntity.ok(JwtResponse.builder()
+              .refreshToken(refreshToken.getToken())
+              .token(jwtUtils.generateJwtToken(userDto.get().getEmail()))
+              .build());
+    }
 
-    String jwt = jwtUtils.generateJwtToken(userDetails);
-
-    List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-            .collect(Collectors.toList());
-
-    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUser().getId());
-
-    return ResponseEntity.ok(new JwtResponse(jwt, "Bearer" ,refreshToken.getToken(), userDetails.getUser().getId(),
-            userDetails.getUsername(), userDetails.getUser().getEmail(), roles));
+    return ResponseEntity.status(403).build();
   }
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-    if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
-      return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-    }
 
-    User user =  User.builder()
+    SignUpForm signUpForm = SignUpForm.builder()
             .email(signUpRequest.getEmail())
-            .password(encoder.encode(signUpRequest.getPassword()))
+            .password(signUpRequest.getPassword())
+            .passwordAgain(signUpRequest.getPassword())
             .build();
 
-    userRepository.save(user);
-
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    if (signUpService.signUp(signUpForm)) {
+      return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+    return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
   }
 
   @PostMapping("/refreshtoken")

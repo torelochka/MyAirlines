@@ -863,8 +863,10 @@ false Zulu
     <database id="20" parent="1" name="spring_airlines">
       <ObjectId>58027</ObjectId>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>7051</IntrospectionStateNumber>
+      <IntrospectionStateNumber>7110</IntrospectionStateNumber>
       <Current>1</Current>
+      <Relations>sequence|table|58156|58158|1
+</Relations>
     </database>
     <database id="21" parent="1" name="spring_jpa">
       <ObjectId>41920</ObjectId>
@@ -943,7 +945,7 @@ false Zulu
       <Comment>standard public schema</Comment>
       <StateNumber>287</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>7052</IntrospectionStateNumber>
+      <IntrospectionStateNumber>7111</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="40" parent="20" name="heap">
@@ -1013,5 +1015,137 @@ false Zulu
     <language id="49" parent="20" name="internal"/>
     <language id="50" parent="20" name="plpgsql"/>
     <language id="51" parent="20" name="sql"/>
+    <sequence id="52" parent="39" name="hibernate_sequence">
+      <ObjectId>58149</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>7102</StateNumber>
+      <DataType>bigint|0s</DataType>
+    </sequence>
+    <sequence id="53" parent="39" name="users_id_seq">
+      <ObjectId>58156</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>7104</StateNumber>
+      <DataType>bigint|0s</DataType>
+    </sequence>
+    <table id="54" parent="39" name="refreshtoken">
+      <ObjectId>58151</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>7106</StateNumber>
+    </table>
+    <table id="55" parent="39" name="users">
+      <ObjectId>58158</ObjectId>
+      <Outdated>1</Outdated>
+      <Owner>postgres</Owner>
+      <StateNumber>7106</StateNumber>
+    </table>
+    <column id="56" parent="54" name="id">
+      <Position>1</Position>
+      <DataType>bigint|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>7103</StateNumber>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="57" parent="54" name="expiry_date">
+      <Position>2</Position>
+      <DataType>timestamp|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>7103</StateNumber>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="58" parent="54" name="token">
+      <Position>3</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>7103</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="59" parent="54" name="user_id">
+      <Position>4</Position>
+      <DataType>bigint|0s</DataType>
+      <StateNumber>7103</StateNumber>
+      <TypeId>20</TypeId>
+    </column>
+    <index id="60" parent="54" name="refreshtoken_pkey">
+      <ObjectId>58154</ObjectId>
+      <StateNumber>7103</StateNumber>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+      <Primary>1</Primary>
+    </index>
+    <index id="61" parent="54" name="uk_or156wbneyk8noo4jstv55ii3">
+      <ObjectId>58166</ObjectId>
+      <StateNumber>7105</StateNumber>
+      <ColNames>token</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="62" parent="54" name="refreshtoken_pkey">
+      <ObjectId>58155</ObjectId>
+      <StateNumber>7103</StateNumber>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>refreshtoken_pkey</UnderlyingIndexName>
+    </key>
+    <key id="63" parent="54" name="uk_or156wbneyk8noo4jstv55ii3">
+      <ObjectId>58167</ObjectId>
+      <StateNumber>7105</StateNumber>
+      <ColNames>token</ColNames>
+      <UnderlyingIndexName>uk_or156wbneyk8noo4jstv55ii3</UnderlyingIndexName>
+    </key>
+    <foreign-key id="64" parent="54" name="fka652xrdji49m4isx38pp4p80p">
+      <ObjectId>58168</ObjectId>
+      <StateNumber>7106</StateNumber>
+      <ColNames>user_id</ColNames>
+      <RefTableId>58158</RefTableId>
+      <RefColPositions>1</RefColPositions>
+      <RefTableName>users</RefTableName>
+      <RefKeyName>users_pkey</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="65" parent="55" name="id">
+      <Position>1</Position>
+      <DataType>bigint|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>7104</StateNumber>
+      <TypeId>20</TypeId>
+      <IdentityKind>by-default</IdentityKind>
+    </column>
+    <column id="66" parent="55" name="email">
+      <Position>2</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <StateNumber>7104</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="67" parent="55" name="password">
+      <Position>3</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <StateNumber>7104</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="68" parent="55" name="role">
+      <Position>4</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <StateNumber>7104</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="69" parent="55" name="state">
+      <Position>5</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <StateNumber>7104</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="70" parent="55" name="users_pkey">
+      <ObjectId>58164</ObjectId>
+      <StateNumber>7104</StateNumber>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+      <Primary>1</Primary>
+    </index>
+    <key id="71" parent="55" name="users_pkey">
+      <ObjectId>58165</ObjectId>
+      <StateNumber>7104</StateNumber>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>users_pkey</UnderlyingIndexName>
+    </key>
   </database-model>
 </dataSource>
