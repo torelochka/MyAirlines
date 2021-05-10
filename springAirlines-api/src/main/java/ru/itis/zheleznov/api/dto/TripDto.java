@@ -11,9 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
+public class TripDto {
 
-    private Long id;
-    private String email;
-    private List<BookingDto> bookings;
+    private List<CityDto> cities;
+    private Integer cost;
+    private Integer time;
 }

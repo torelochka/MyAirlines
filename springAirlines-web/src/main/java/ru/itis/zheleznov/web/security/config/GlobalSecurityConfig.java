@@ -20,7 +20,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ru.itis.zheleznov.web.security.details.UserDetailsServiceImpl;
 import ru.itis.zheleznov.web.security.filters.GoogleFilter;
 import ru.itis.zheleznov.web.security.filters.UserFilter;
-import ru.itis.zheleznov.web.security.jwt.AuthEntryPointJwt;
 import ru.itis.zheleznov.web.security.jwt.AuthTokenFilter;
 import ru.itis.zheleznov.web.security.jwt.TokenAuthenticationFilter;
 import ru.itis.zheleznov.web.security.jwt.TokenAuthenticationProvider;
@@ -51,7 +50,7 @@ public class GlobalSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .authorizeRequests()
-                        .antMatchers("/profile").authenticated().and()
+                        .antMatchers("/profile", "/booking/**").authenticated().and()
                     .formLogin()
                         .loginPage("/signIn")
                         .usernameParameter("email")
@@ -107,7 +106,7 @@ public class GlobalSecurityConfig {
                         .csrf().disable()
                         .sessionManagement().disable()
                         .authorizeRequests()
-                            .antMatchers("/api/auth/**").permitAll()
+                            .antMatchers("/api/auth/**", "/api/cities").permitAll()
                             .anyRequest().authenticated().and();
         }
 

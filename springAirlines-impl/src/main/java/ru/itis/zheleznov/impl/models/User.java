@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +22,7 @@ public class User {
     private Long id;
     private String email;
     private String password;
+
     @Builder.Default
     @Enumerated(value = EnumType.STRING)
     private Role role = Role.ROLE_USER;

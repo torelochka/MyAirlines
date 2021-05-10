@@ -5,15 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
+public class TripForm {
 
-    private Long id;
-    private String email;
-    private List<BookingDto> bookings;
+    private String from;
+    private String to;
 }

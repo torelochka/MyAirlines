@@ -3,7 +3,7 @@
         <a class="navbar-brand" href="/main">Spring Airlines</a>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-item nav-link active" href="#">Главная</a>
+                <a class="nav-item nav-link active" href="/main">Главная</a>
                 <#if !user??>
                     <a class="nav-item nav-link active" href="/signIn">Авторизация</a>
                     <a class="nav-item nav-link active" href="/signUp">Регистрация</a>
