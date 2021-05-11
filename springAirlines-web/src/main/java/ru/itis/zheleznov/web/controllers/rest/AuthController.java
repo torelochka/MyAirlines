@@ -1,5 +1,8 @@
-package ru.itis.zheleznov.web.controllers;
+package ru.itis.zheleznov.web.controllers.rest;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,8 +62,10 @@ public class AuthController {
   @Autowired
   private UserService userService;
 
+  @ApiOperation(value = "Sign in to receive jwt token")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = JwtResponse.class)})
   @PostMapping("/signIn")
-  @PermitAll
+//  @PermitAll
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
     Optional<UserDto> userDto = userService.userByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
@@ -77,12 +82,14 @@ public class AuthController {
     return ResponseEntity.status(403).build();
   }
 
+  @ApiOperation(value = "Sign up to sign in to receive jwt token")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = MessageResponse.class)})
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
     SignUpForm signUpForm = SignUpForm.builder()
             .email(signUpRequest.getEmail())
-            .password(signUpRequest.getPassword())
+            .password(encoder.encode(signUpRequest.getPassword()))
             .passwordAgain(signUpRequest.getPassword())
             .build();
 
@@ -92,6 +99,8 @@ public class AuthController {
     return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
   }
 
+  @ApiOperation(value = "refresh token")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = TokenRefreshResponse.class)})
   @PostMapping("/refreshtoken")
   public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
     String requestRefreshToken = request.getRefreshToken();

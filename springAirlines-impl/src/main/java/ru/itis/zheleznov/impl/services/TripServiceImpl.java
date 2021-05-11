@@ -17,19 +17,19 @@ import java.util.stream.Collectors;
 @Service
 public class TripServiceImpl implements TripService {
 
-    private static final String CYPHER_DIRECT_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1]-(london:City {name:'?to?'})" +
+    private static final String CYPHER_DIRECT_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1]->(london:City {name:'?to?'})" +
             " with nodes(t) as cities, " +
             "reduce(totalCost = 0, p IN relationships(t) | totalCost + p.cost) AS cost, " +
             "reduce(totalTime = 0, ti IN relationships(t) | totalTime + ti.time) AS time " +
             "return cities, cost, time order by time limit 1";
 
-    private static final String CYPHER_FASTEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..?count?]-(london:City {name:'?to?'})" +
+    private static final String CYPHER_FASTEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..4]->(london:City {name:'?to?'})" +
             " with nodes(t) as cities, " +
             "reduce(totalCost = 0, p IN relationships(t) | totalCost + p.cost) AS cost, " +
             "reduce(totalTime = 0, ti IN relationships(t) | totalTime + ti.time) AS time " +
             "return cities, cost, time order by time limit 1";
 
-    private static final String CYPHER_CHEAPEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..?count?]-(london:City {name:'?to?'})" +
+    private static final String CYPHER_CHEAPEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..4]->(london:City {name:'?to?'})" +
             " with nodes(t) as cities, " +
             "reduce(totalCost = 0, p IN relationships(t) | totalCost + p.cost) AS cost, " +
             "reduce(totalTime = 0, ti IN relationships(t) | totalTime + ti.time) AS time " +
@@ -47,7 +47,7 @@ public class TripServiceImpl implements TripService {
     @Override
     public TripDto cheapestTrip(CityDto from, CityDto to) {
         try (Session session = driver.session()) {
-            Record record = session.run(insertValues(insertCount(CYPHER_CHEAPEST_TRIP), from, to)).single();
+            Record record = session.run(insertValues(CYPHER_CHEAPEST_TRIP, from, to)).single();
 
             Integer time = record.get("time").asInt();
             Integer cost = record.get("cost").asInt();
@@ -70,7 +70,7 @@ public class TripServiceImpl implements TripService {
     @Override
     public TripDto fastestTrip(CityDto from, CityDto to) {
         try (Session session = driver.session()) {
-            Record record = session.run(insertValues(insertCount(CYPHER_FASTEST_TRIP), from, to)).single();
+            Record record = session.run(insertValues(CYPHER_FASTEST_TRIP, from, to)).single();
 
             Integer time = record.get("time").asInt();
             Integer cost = record.get("cost").asInt();
@@ -93,7 +93,7 @@ public class TripServiceImpl implements TripService {
     @Override
     public TripDto directTrip(CityDto from, CityDto to) {
         try (Session session = driver.session()) {
-            Record record = session.run(insertValues(insertCount(CYPHER_DIRECT_TRIP), from, to)).single();
+            Record record = session.run(insertValues(CYPHER_DIRECT_TRIP, from, to)).single();
 
             Integer time = record.get("time").asInt();
             Integer cost = record.get("cost").asInt();
@@ -115,14 +115,5 @@ public class TripServiceImpl implements TripService {
 
     private String insertValues(String cypherScript, CityDto from, CityDto to) {
         return cypherScript.replace("?from?", from.getName()).replace("?to?", to.getName());
-    }
-
-    private String insertCount(String cypherScript) {
-        try (Session session = driver.session()) {
-            Integer count = session.run(CYPHER_COUNT)
-                    .list(r -> r.get("countCities").asInt()).get(0);
-
-            return cypherScript.replace("?count?", String.valueOf(count));
-        }
     }
 }

@@ -1,8 +1,8 @@
 <#import "layouts/base.ftlh" as base>
-<@base.main title="Главная" >
+<@base.main title="Главная" scripts=["cities.js"]>
     <main>
         <div class="container">
-            <h1>Main</h1>
+            <h3 id="tripsBlock"></h3>
             <form method="post" action="/trip">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                 <div class="form-row">
