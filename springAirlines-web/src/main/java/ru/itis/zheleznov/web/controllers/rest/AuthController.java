@@ -42,12 +42,6 @@ import java.util.stream.Collectors;
 public class AuthController {
 
   @Autowired
-  AuthenticationManager authenticationManager;
-
-  @Autowired
-  UserRepository userRepository;
-
-  @Autowired
   PasswordEncoder encoder;
 
   @Autowired
@@ -65,7 +59,6 @@ public class AuthController {
   @ApiOperation(value = "Sign in to receive jwt token")
   @ApiResponses(value = {@ApiResponse(code = 200, message = "", response = JwtResponse.class)})
   @PostMapping("/signIn")
-//  @PermitAll
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
     Optional<UserDto> userDto = userService.userByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());

@@ -27,7 +27,7 @@
                                     </div>
                                     <div class="form-group">
                                         <span class="text-black-50">Пароль</span>
-                                        <@spring.formPasswordInput "signUpForm.password" "class='form-control'                                          required "/>
+                                        <@spring.formPasswordInput "signUpForm.password" "class='form-control' required "/>
                                         <@spring.showErrors "<br>" "error"/>
                                         <#if passwordsErrorMessage??><p class="error">${passwordsErrorMessage}</p></#if>
                                     </div>

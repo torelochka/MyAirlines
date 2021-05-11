@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Insert title here</title>
+    <title>Chat</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <script src="/js/jquery.min.js"></script>
@@ -11,7 +11,7 @@
     <script src="/js/script.js"></script>
 </head>
 <body>
-<h1>Simple chat</h1>
+<h1>Сhat</h1>
 <div class="chat_window">
     <div class="top_menu">
         <div class="buttons">
