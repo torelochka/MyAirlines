@@ -11,6 +11,7 @@ import ru.itis.zheleznov.api.services.CityService;
 import ru.itis.zheleznov.api.services.TripService;
 
 import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 @Controller
 public class TripController {
@@ -26,13 +27,11 @@ public class TripController {
 
     @GetMapping("/trips")
     public String getTripsPage(Model model) {
-        model.addAttribute("cities", cityService.allCities());
-
         return "trips";
     }
 
     @PostMapping("/trip")
-    public String findTrip(TripForm tripForm, HttpSession session) {
+    public String findTrip(TripForm tripForm, HttpSession session, Model model) {
         CityDto from = CityDto.builder()
                 .name(tripForm.getFrom())
                 .build();
@@ -41,9 +40,13 @@ public class TripController {
                 .name(tripForm.getTo())
                 .build();
 
+
+
         session.setAttribute("cheapest", tripService.cheapestTrip(from, to));
         session.setAttribute("direct", tripService.directTrip(from, to));
         session.setAttribute("fastest", tripService.fastestTrip(from, to));
+        session.setAttribute("from", from.getName());
+        session.setAttribute("to", to.getName());
 
         return "redirect:/trips";
     }

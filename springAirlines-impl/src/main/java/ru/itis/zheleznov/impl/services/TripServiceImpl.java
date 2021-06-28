@@ -12,6 +12,7 @@ import ru.itis.zheleznov.api.services.TripService;
 import ru.itis.zheleznov.impl.mappers.NodeCityMapper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,19 +24,17 @@ public class TripServiceImpl implements TripService {
             "reduce(totalTime = 0, ti IN relationships(t) | totalTime + ti.time) AS time " +
             "return cities, cost, time order by time limit 1";
 
-    private static final String CYPHER_FASTEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..4]->(london:City {name:'?to?'})" +
+    private static final String CYPHER_FASTEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..2]->(london:City {name:'?to?'})" +
             " with nodes(t) as cities, " +
             "reduce(totalCost = 0, p IN relationships(t) | totalCost + p.cost) AS cost, " +
             "reduce(totalTime = 0, ti IN relationships(t) | totalTime + ti.time) AS time " +
             "return cities, cost, time order by time limit 1";
 
-    private static final String CYPHER_CHEAPEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..4]->(london:City {name:'?to?'})" +
+    private static final String CYPHER_CHEAPEST_TRIP = "match t = (atyrau:City {name: '?from?'})-[*1..2]->(london:City {name:'?to?'})" +
             " with nodes(t) as cities, " +
             "reduce(totalCost = 0, p IN relationships(t) | totalCost + p.cost) AS cost, " +
             "reduce(totalTime = 0, ti IN relationships(t) | totalTime + ti.time) AS time " +
             "return cities, cost, time order by cost limit 1";
-
-    private static final String CYPHER_COUNT = "match (n:City) return count(n) as countCities";
 
     private final Driver driver;
 
@@ -45,7 +44,7 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public TripDto cheapestTrip(CityDto from, CityDto to) {
+    public Optional<TripDto> cheapestTrip(CityDto from, CityDto to) {
         try (Session session = driver.session()) {
             Record record = session.run(insertValues(CYPHER_CHEAPEST_TRIP, from, to)).single();
 
@@ -58,17 +57,19 @@ public class TripServiceImpl implements TripService {
                     .stream().map(city -> NodeCityMapper.map((Node) city))
                     .collect(Collectors.toList());
 
-            return TripDto.builder()
+            return Optional.of(TripDto.builder()
                     .cities(cities)
                     .cost(cost)
                     .time(time)
-                    .build();
+                    .build());
 
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 
     @Override
-    public TripDto fastestTrip(CityDto from, CityDto to) {
+    public Optional<TripDto> fastestTrip(CityDto from, CityDto to) {
         try (Session session = driver.session()) {
             Record record = session.run(insertValues(CYPHER_FASTEST_TRIP, from, to)).single();
 
@@ -81,17 +82,19 @@ public class TripServiceImpl implements TripService {
                     .stream().map(city -> NodeCityMapper.map((Node) city))
                     .collect(Collectors.toList());
 
-            return TripDto.builder()
+            return Optional.of(TripDto.builder()
                     .cities(cities)
                     .cost(cost)
                     .time(time)
-                    .build();
+                    .build());
 
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 
     @Override
-    public TripDto directTrip(CityDto from, CityDto to) {
+    public Optional<TripDto> directTrip(CityDto from, CityDto to) {
         try (Session session = driver.session()) {
             Record record = session.run(insertValues(CYPHER_DIRECT_TRIP, from, to)).single();
 
@@ -104,12 +107,14 @@ public class TripServiceImpl implements TripService {
                     .stream().map(city -> NodeCityMapper.map((Node) city))
                     .collect(Collectors.toList());
 
-            return TripDto.builder()
+            return Optional.of(TripDto.builder()
                     .cities(cities)
                     .cost(cost)
                     .time(time)
-                    .build();
+                    .build());
 
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 

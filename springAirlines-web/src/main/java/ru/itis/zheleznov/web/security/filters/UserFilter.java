@@ -1,9 +1,12 @@
 package ru.itis.zheleznov.web.security.filters;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
+import ru.itis.zheleznov.api.dto.UserDto;
 import ru.itis.zheleznov.web.security.details.UserDetailsImpl;
 
 import javax.servlet.FilterChain;
@@ -17,6 +20,9 @@ import java.io.IOException;
 @Component
 public class UserFilter extends GenericFilterBean {
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -28,7 +34,7 @@ public class UserFilter extends GenericFilterBean {
             if (authentication.getPrincipal() instanceof UserDetailsImpl) {
                 UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-                session.setAttribute("user", userDetails.getUser());
+                session.setAttribute("user", modelMapper.map(userDetails.getUser(), UserDto.class));
             }
         }
 

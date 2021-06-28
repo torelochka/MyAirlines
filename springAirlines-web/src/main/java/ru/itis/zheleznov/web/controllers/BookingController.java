@@ -15,6 +15,7 @@ import ru.itis.zheleznov.impl.models.Booking;
 import ru.itis.zheleznov.web.security.details.UserDetailsImpl;
 
 import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 @Controller
 public class BookingController {
@@ -35,10 +36,10 @@ public class BookingController {
         UserDto userDto = userService.userById(user.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
-        TripDto trip = (TripDto) session.getAttribute(tripType);
-        if (trip != null) {
+        Optional<TripDto> trip = (Optional<TripDto>) session.getAttribute(tripType);
+        if (trip.isPresent()) {
             BookingDto bookingDto = BookingDto.builder()
-                    .trip(trip)
+                    .trip(trip.get())
                     .user(userDto)
                     .build();
 
